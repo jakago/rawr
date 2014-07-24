@@ -5,7 +5,7 @@ module Rawr
   class JRubyRelease
     @@releases = nil
 
-    BASE_URL='http://repository.codehaus.org/org/jruby/jruby-complete'
+    BASE_URL='http://repo1.maven.org/maven2/org/jruby/jruby-complete'
 
     attr_accessor :version, :rc, :version_string
 
@@ -47,7 +47,7 @@ module Rawr
       #
       # so we want to find all of those and find the latest, but note any RC entries
       lines = open(BASE_URL).readlines
-      lines.map!{|l| l =~ /(href=")([\.\dRC]+)(\/">)/ ? $2 : nil }
+      lines.map!{|l| l =~ /(href=")([\.\d]+)(\/">)/ ? $2 : nil }
       lines.compact!
       lines.map!{|l| new(l) }
       lines.sort!
@@ -84,11 +84,11 @@ module Rawr
 
     def <=>(other)
       raise "#{other} is not a Release." unless other.kind_of?(Rawr::JRubyRelease)
-      if self.version != other.version
-        self.version <=> other.version #? self : other
-      else
-        self.rc <=> other.rc #? self : other
-      end
+      sv = self.version.split('.').map { |s| s.to_i }
+      ov = other.version.split('.').map { |s| s.to_i }
+      return self.version <=> other.version unless sv.size == ov.size
+      0.upto(sv.size - 2) { |n| return sv[n] <=> ov[n] unless sv[n] == ov[n] }
+      sv[-1] <=> ov[-1]
     end
 
     def to_s
