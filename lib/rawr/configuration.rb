@@ -20,11 +20,12 @@ module Rawr
     #
     #  - Does the Mirah stuff actually work?
     #
+    jvm_version = RbConfig::CONFIG["host_os"] =~ /darwin/ ? 1.6 : 1.7
     OPTIONS = [
       Option.new(:project_name, String, File.basename(Dir.pwd) , "The name for your resulting application file (e.g., if the project_name is 'foo' then you'll get foo.jar, foo.exe, etc.)", nil), 
       Option.new(:output_dir, FilePath, 'package'),
 
-      Option.new(:executable_type, String, 'gui', "The type of executable to create (console or gui)"),
+      Option.new(:executable_type, String, 'console', "The type of executable to create (console or gui)"),
 
       Option.new(:main_ruby_file, String, 'main', "The main ruby file to invoke, minus the .rb extension"),
       Option.new(:main_java_file, String, 'org.monkeybars.rawr.Main', 'The fully-qualified name of the main Java file used to initiate the application.'),
@@ -39,8 +40,8 @@ module Rawr
       Option.new(:java_lib_dirs, [FilePath], ['lib/java'], "A list of directories for rawr to include . All files in the given directories get bundled up."),
       Option.new(:files_to_copy, [FilePath], [], "A list of files that will be copied into the `<output_dir>/jar` folder.  Note that the files maintain their directory path when copied. "), #FIXME: maybe needs file.sub(pwd, '')
 
-      Option.new(:source_jvm_version, Numeric, 1.7),
-      Option.new(:target_jvm_version, Numeric, 1.7),
+      Option.new(:source_jvm_version, Numeric, jvm_version),
+      Option.new(:target_jvm_version, Numeric, jvm_version),
       Option.new(:jvm_arguments, [String], ''),
       Option.new(:java_library_path, [String], ''),
 
